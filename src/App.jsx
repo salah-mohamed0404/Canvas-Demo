@@ -1,5 +1,11 @@
+import CanvasBoard from "./components/Canvas/CanvasBoard";
+
 function App() {
-  return <></>;
+  return (
+    <main>
+      <CanvasBoard />
+    </main>
+  );
 }
 
 export default App;
