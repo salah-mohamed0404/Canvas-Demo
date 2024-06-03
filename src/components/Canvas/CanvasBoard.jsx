@@ -29,21 +29,29 @@ export default function CanvasBoard() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = throttle((event) => {
-    setMousePosition({ x: event.evt.clientX, y: event.evt.clientY });
-  }, 60);
+    setMousePosition({ x: event.clientX, y: event.clientY });
+  }, 5);
+
+  const handleKeyDown = (event) => {
+    // Escape key Code is 27
+    if (event.keyCode === 27 && isAddingSolarPanelArea) {
+      setIsAddingSolarPanelArea(false);
+    }
+  };
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
 
   return (
     <div
-      className={`grid h-dvh w-dvw place-content-center bg-neutral-300 ${isHovering ? "cursor-move" : ""} ${isAddingSolarPanelArea ? "cursor-crosshair" : ""}`}
+      className={`grid h-dvh w-dvw place-content-center bg-neutral-300 ${
+        isHovering ? "cursor-move" : ""
+      } ${isAddingSolarPanelArea ? "cursor-crosshair" : ""}`}
+      onMouseMoveCapture={handleMouseMove}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
     >
-      <Stage
-        width={stageWidth}
-        height={stageHeight}
-        onMouseMove={handleMouseMove}
-      >
+      <Stage width={stageWidth} height={stageHeight}>
         <Layer
           draggable
           onMouseEnter={handleMouseEnter}
@@ -72,9 +80,9 @@ export default function CanvasBoard() {
 
       <button
         className="bg-primary-500 absolute right-5 top-5 rounded-md bg-slate-800 p-2 px-6 py-3 text-white"
-        onClick={() => setIsAddingSolarPanelArea((prev) => !prev)}
+        onClick={() => setIsAddingSolarPanelArea(true)}
       >
-        {isAddingSolarPanelArea ? "Cancel" : "Add Solar Panel Area"}
+        {isAddingSolarPanelArea ? "Adding" : "Add Solar Panel Area"}
       </button>
       {isAddingSolarPanelArea && <MouseAxises mousePosition={mousePosition} />}
     </div>
