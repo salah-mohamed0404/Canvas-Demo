@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { Rect } from "react-konva";
 
-export default function MainRect({ x, y, width, height }) {
+export default memo(function MainRect({ x, y, width, height }) {
   return (
     <Rect
       x={x} // Half of the stage width minus half of the Rect width to center it horizontally
@@ -10,4 +11,4 @@ export default function MainRect({ x, y, width, height }) {
       fill="white"
     />
   );
-}
+});
