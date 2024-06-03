@@ -1,11 +1,7 @@
 import CanvasBoard from "./components/Canvas/CanvasBoard";
 
 function App() {
-  return (
-    <main>
-      <CanvasBoard />
-    </main>
-  );
+  return <CanvasBoard />;
 }
 
 export default App;
