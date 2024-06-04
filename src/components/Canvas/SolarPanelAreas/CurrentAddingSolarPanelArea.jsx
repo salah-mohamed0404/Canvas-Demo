@@ -1,15 +1,21 @@
-import { Rect } from "react-konva";
+import SolarPanelArea from "./SolarPanelArea";
 
-export default function CurrentAddingSolarPanelArea({ startPos, currentPos }) {
+export default function CurrentAddingSolarPanelArea({
+  startPos,
+  currentPos,
+  roof,
+}) {
   return (
     startPos &&
     currentPos && (
-      <Rect
-        x={Math.min(startPos.x, currentPos.x)}
-        y={Math.min(startPos.y, currentPos.y)}
-        width={Math.abs(startPos.x - currentPos.x)}
-        height={Math.abs(startPos.y - currentPos.y)}
-        stroke="rgba(0,0,0,0.5)"
+      <SolarPanelArea
+        rect={{
+          x: Math.min(startPos.x, currentPos.x),
+          y: Math.min(startPos.y, currentPos.y),
+          width: Math.abs(startPos.x - currentPos.x),
+          height: Math.abs(startPos.y - currentPos.y),
+        }}
+        roof={roof}
       />
     )
   );
