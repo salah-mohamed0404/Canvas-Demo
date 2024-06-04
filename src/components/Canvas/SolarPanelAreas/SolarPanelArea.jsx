@@ -1,27 +1,30 @@
-import { memo, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Group, Rect, Transformer } from "react-konva";
 import {
-  IsExceededRoofArea,
-  IsPossibleToAddSolarPanel,
   SOLAR_PANEL_STATUS,
   SOLAR_PANEL_STATUS_COLOR,
+  IsExceededRoofArea,
+  getSolarPanels,
 } from "../../../utils/SolarPanel";
 
 const solarPanelWidth = 30;
 const solarPanelHeight = 60;
 const solarPanelsSpacing = 5;
 
-const determineSolarPanelStatus = (solarPanel, roof, newBox) =>
-  IsExceededRoofArea(solarPanel, roof)
-    ? SOLAR_PANEL_STATUS.WARNING
-    : IsPossibleToAddSolarPanel(solarPanel, newBox)
-      ? SOLAR_PANEL_STATUS.POSSIBLE
-      : SOLAR_PANEL_STATUS.NORMAL;
-
 export default memo(function SolarPanelArea({ rect, roof }) {
   const [solarPanels, setSolarPanels] = useState([]);
   const rectRef = useRef();
   const trRef = useRef();
+
+  useEffect(() => {
+    const newSolarPanels = getSolarPanels({}, rect, roof, {
+      solarPanelWidth,
+      solarPanelHeight,
+      solarPanelsSpacing,
+    });
+
+    setSolarPanels(newSolarPanels);
+  }, [rect, roof]);
 
   const handleRectClick = () => {
     trRef.current.nodes([rectRef.current]);
@@ -31,39 +34,11 @@ export default memo(function SolarPanelArea({ rect, roof }) {
   const handleResizeLimit = (oldBox, newBox) => {
     if (IsExceededRoofArea(newBox, roof)) return oldBox;
 
-    const newSolarPanels = [];
-    const startX = newBox.x;
-    const startY = newBox.y;
-    const endX = newBox.x + newBox.width;
-    const endY = newBox.y + newBox.height;
-
-    for (
-      let newX = startX;
-      newX < endX;
-      newX += solarPanelWidth + solarPanelsSpacing
-    ) {
-      for (
-        let newY = startY;
-        newY < endY;
-        newY += solarPanelHeight + solarPanelsSpacing
-      ) {
-        const solarPanel = {
-          x: newX,
-          y: newY,
-          width: solarPanelWidth,
-          height: solarPanelHeight,
-        };
-
-        const newStatus = determineSolarPanelStatus(solarPanel, roof, newBox);
-
-        newSolarPanels.push({
-          x: newX,
-          y: newY,
-          status: newStatus,
-          isRemoved: false,
-        });
-      }
-    }
+    const newSolarPanels = getSolarPanels(oldBox, newBox, roof, {
+      solarPanelWidth,
+      solarPanelHeight,
+      solarPanelsSpacing,
+    });
 
     setSolarPanels(newSolarPanels);
 
@@ -80,8 +55,70 @@ export default memo(function SolarPanelArea({ rect, roof }) {
     );
   };
 
+  // const handleTransformEnd = () => {
+  //   const filteredSolarPanels = solarPanels.filter(
+  //     (solarPanel) => solarPanel.status === SOLAR_PANEL_STATUS.NORMAL,
+  //   );
+  //   const lastSolarPanel = filteredSolarPanels.at(-1);
+  //   const rectAttrs = rectRef.current.attrs;
+  //   console.log("lastSolarPanel", lastSolarPanel);
+  //   console.log("rectAttrs", rectAttrs);
+
+  //   // rectAttrs.width =
+  //   //   Math.abs(lastSolarPanel.x - rectAttrs.x) + solarPanelWidth;
+  //   // rectAttrs.height =
+  //   //   Math.abs(lastSolarPanel.y - rectAttrs.y) + solarPanelHeight;
+
+  //   setSolarPanels(filteredSolarPanels);
+
+  //   // trRef.current.nodes([rectRef.current]);
+  //   // trRef.current.getLayer().batchDraw();
+  // };
+
+  // const handleDragMove = () => {
+  //   // console.log("solarPanels", solarPanels[0]);
+  //   // console.log("roof", roof);
+  //   setSolarPanels((prevSolarPanels) =>
+  //     prevSolarPanels.map((solarPanel) => ({
+  //       ...solarPanel,
+  //       status: IsExceededRoofArea(solarPanel, roof)
+  //         ? SOLAR_PANEL_STATUS.WARNING
+  //         : SOLAR_PANEL_STATUS.NORMAL,
+  //     })),
+  //   );
+  // };
+
   return (
-    <Group draggable onClick={handleRectClick}>
+    <Group
+      draggable
+      onClick={handleRectClick}
+      // onDragMove={handleDragMove}
+      // dragBoundFunc={(pos) => {
+      //   const group = rectRef.current.getStage();
+      //   const size = group.getSize();
+      //   console.log("pos", pos);
+      //   console.log("roof", roof);
+
+      //   // Get the mainRectCoords from the parent component via props
+      //   const {
+      //     x: mainRectX,
+      //     y: mainRectY,
+      //     width: mainRectWidth,
+      //     height: mainRectHeight,
+      //   } = roof;
+
+      //   return {
+      //     x: Math.min(
+      //       Math.max(pos.x, mainRectX),
+      //       mainRectX + mainRectWidth - rect.width,
+      //     ),
+      //     y: Math.min(
+      //       Math.max(pos.y, mainRectY),
+      //       mainRectY + mainRectHeight - rect.height,
+      //     ),
+      //   };
+      // }}
+    >
       <Rect
         ref={rectRef}
         x={rect.x}
@@ -105,6 +142,7 @@ export default memo(function SolarPanelArea({ rect, roof }) {
           "bottom-right",
         ]}
         boundBoxFunc={handleResizeLimit}
+        // onTransformEnd={handleTransformEnd}
       />
       <Group>
         {solarPanels.map((solarPanel, i) => (
