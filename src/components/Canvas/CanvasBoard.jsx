@@ -3,17 +3,18 @@ import { Layer, Stage } from "react-konva";
 import MainRect from "./MainRect";
 import StrokedRect from "./StrokedRect";
 import TextWithBackground from "./TextWithBackground";
-import { throttle } from "../../utils/throttle";
 import MouseAxises from "./MouseAxises";
 import SolarPanelAreas from "./SolarPanelAreas";
 import CurrentAddingSolarPanelArea from "./SolarPanelAreas/CurrentAddingSolarPanelArea";
+import { throttle } from "../../utils/throttle";
+import { IsExceededRoofArea, createSolarPanel } from "../../utils/SolarPanel";
 
 const stageWidth = window.innerWidth;
 const stageHeight = window.innerHeight;
 
 const mainRectWidth = 800;
 const mainRectHeight = 400;
-const mainRectCoords = {
+const MAIN_RECT_COORDS = {
   x: stageWidth / 2 - mainRectWidth / 2,
   y: stageHeight / 2 - mainRectHeight / 2,
 };
@@ -32,6 +33,7 @@ export default function CanvasBoard() {
   const [rectangles, setRectangles] = useState([]);
   const [startPos, setStartPos] = useState(null);
   const [currentPos, setCurrentPos] = useState(null);
+  const [mainRectCoords, setMainRectCoords] = useState(MAIN_RECT_COORDS);
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
@@ -39,8 +41,21 @@ export default function CanvasBoard() {
   const handleMouseMove = throttle((event) => {
     if (!isAddingSolarPanelArea) return;
 
-    setMousePosition({ x: event.clientX, y: event.clientY });
-    setCurrentPos({ x: event.clientX, y: event.clientY });
+    const currentCoords = { x: event.clientX, y: event.clientY };
+
+    setMousePosition(currentCoords);
+
+    if (
+      startPos &&
+      IsExceededRoofArea(createSolarPanel(startPos, currentCoords), {
+        width: mainRectWidth,
+        height: mainRectHeight,
+        ...mainRectCoords,
+      })
+    )
+      return;
+
+    setCurrentPos(currentCoords);
   }, 5);
 
   const handleMouseDown = (event) => {
@@ -54,15 +69,7 @@ export default function CanvasBoard() {
 
     setIsAddingSolarPanelArea(false);
 
-    setRectangles([
-      ...rectangles,
-      {
-        x: Math.min(startPos.x, currentPos.x),
-        y: Math.min(startPos.y, currentPos.y),
-        width: Math.abs(startPos.x - currentPos.x),
-        height: Math.abs(startPos.y - currentPos.y),
-      },
-    ]);
+    setRectangles([...rectangles, createSolarPanel(startPos, currentPos)]);
     setStartPos(null);
     setCurrentPos(null);
   };
@@ -72,6 +79,14 @@ export default function CanvasBoard() {
     if (event.keyCode === 27 && isAddingSolarPanelArea) {
       setIsAddingSolarPanelArea(false);
     }
+  };
+
+  const handleDragEnd = (event) => {
+    console.log("event.target", event.target);
+    setMainRectCoords({
+      x: event.target.attrs.x,
+      y: event.target.attrs.y,
+    });
   };
 
   return (
@@ -122,6 +137,11 @@ export default function CanvasBoard() {
           <CurrentAddingSolarPanelArea
             startPos={startPos}
             currentPos={currentPos}
+            roof={{
+              width: mainRectWidth,
+              height: mainRectHeight,
+              ...mainRectCoords,
+            }}
           />
         </Layer>
       </Stage>
