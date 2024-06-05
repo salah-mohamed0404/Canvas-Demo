@@ -171,5 +171,6 @@ export const createSolarPanel = (startPos, currentPos) => {
     height: Math.abs(startPos.y - currentPos.y),
     status: SOLAR_PANEL_STATUS.NORMAL,
     isRemoved: false,
+    isNew: true,
   };
 };
