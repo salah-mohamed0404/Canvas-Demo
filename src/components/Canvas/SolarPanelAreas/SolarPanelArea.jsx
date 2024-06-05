@@ -21,6 +21,35 @@ export default memo(function SolarPanelArea({
   const rectRef = useRef();
   const trRef = useRef();
 
+  if (rect.isNew && rectRef.current && solarPanels.length !== 0) {
+    const node = rectRef.current;
+    const newX = node.attrs.x;
+    const newY = node.attrs.y;
+
+    const lastSolarPanel = solarPanels
+      .filter((solarPanel) => solarPanel.status === SOLAR_PANEL_STATUS.NORMAL)
+      .at(-1);
+
+    const width = node.attrs.width;
+    const height = node.attrs.height;
+
+    const spaceToClipX =
+      width - (lastSolarPanel.x + lastSolarPanel.width - newX);
+    const spaceToClipY =
+      height - (lastSolarPanel.y + lastSolarPanel.height - newY);
+
+    const newRect = {
+      x: newX,
+      y: newY,
+      // set minimal value
+      width: width - spaceToClipX + solarPanelsSpacing,
+      height: height - spaceToClipY + solarPanelsSpacing,
+      isNew: false,
+    };
+
+    onChange(newRect);
+  }
+
   useEffect(() => {
     if (isSelected) {
       trRef.current.nodes([rectRef.current]);
@@ -77,7 +106,7 @@ export default memo(function SolarPanelArea({
     const scaleX = node.scaleX();
     const scaleY = node.scaleY();
 
-    // we will reset it back
+    // reset it back
     node.scaleX(1);
     node.scaleY(1);
 
@@ -101,7 +130,6 @@ export default memo(function SolarPanelArea({
     const newRect = {
       x: newX,
       y: newY,
-      // set minimal value
       width: newWidth - spaceToClipX + solarPanelsSpacing,
       height: newHeight - spaceToClipY + solarPanelsSpacing,
     };
