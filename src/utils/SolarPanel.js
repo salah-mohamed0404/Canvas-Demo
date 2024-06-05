@@ -56,16 +56,16 @@ export const determineSolarPanelStatus = (solarPanel, roof, newBox) =>
       ? SOLAR_PANEL_STATUS.POSSIBLE
       : SOLAR_PANEL_STATUS.NORMAL;
 
-const determineDrawDirection = (oldBox, newBox) => {
-  if (!oldBox.x || !oldBox.y) return { x: 0, y: 0 };
+// const determineDrawDirection = (oldBox, newBox) => {
+//   if (!oldBox.x || !oldBox.y) return { x: 0, y: 0 };
 
-  const direction = {
-    x: newBox.x - oldBox.x,
-    y: newBox.y - oldBox.y,
-  };
+//   const direction = {
+//     x: newBox.x - oldBox.x,
+//     y: newBox.y - oldBox.y,
+//   };
 
-  return direction;
-};
+//   return direction;
+// };
 
 const getStartAndEndCoords = (newBox, direction) => {
   if (direction.x === 0 && direction.y === 0)
@@ -128,20 +128,20 @@ export const getSolarPanels = (
 
   for (let newX = startX; isXLoopEnd(newX); newX += incrementX) {
     for (let newY = startY; isYLoopEnd(newY); newY += incrementY) {
-      if (
-        newX !== startX &&
-        newY !== startY &&
-        IsExceededRoofArea(
-          {
-            x: newX - solarPanelWidth,
-            y: newY - solarPanelHeight,
-            width: solarPanelWidth,
-            height: solarPanelHeight,
-          },
-          roof,
-        )
-      )
-        continue;
+      // if (
+      //   newX !== startX &&
+      //   newY !== startY &&
+      //   IsExceededRoofArea(
+      //     {
+      //       x: newX - solarPanelWidth,
+      //       y: newY - solarPanelHeight,
+      //       width: solarPanelWidth,
+      //       height: solarPanelHeight,
+      //     },
+      //     roof,
+      //   )
+      // )
+      //   continue;
 
       const solarPanel = {
         x: newX,
@@ -153,8 +153,7 @@ export const getSolarPanels = (
       const newStatus = determineSolarPanelStatus(solarPanel, roof, newBox);
 
       newSolarPanels.push({
-        x: newX,
-        y: newY,
+        ...solarPanel,
         status: newStatus,
         isRemoved: false,
       });
