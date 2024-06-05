@@ -6,9 +6,9 @@ import {
   getSolarPanels,
 } from "../../../utils/SolarPanel";
 
-const solarPanelWidth = 30;
-const solarPanelHeight = 60;
-const solarPanelsSpacing = 5;
+const solarPanelWidth = 50;
+const solarPanelHeight = 100;
+const solarPanelsSpacing = 2;
 
 export default memo(function SolarPanelArea({
   rect,
