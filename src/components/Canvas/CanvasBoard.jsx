@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Layer, Stage } from "react-konva";
 import MainRect from "./MainRect";
 import StrokedRect from "./StrokedRect";
@@ -47,8 +47,14 @@ export default function CanvasBoard() {
   });
   const [strokedRectCoords, setStrokedRectCoords] =
     useState(STROKED_RECT_COORDS);
-  const { stageRef, stageScale, stagePosition, increaseScale, decreaseScale } =
-    useStageZoom();
+  const {
+    stageRef,
+    stageScale,
+    stagePosition,
+    titleScale,
+    increaseScale,
+    decreaseScale,
+  } = useStageZoom();
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
@@ -155,10 +161,13 @@ export default function CanvasBoard() {
             stageHeight={stageHeight}
             {...strokedRectDimensions}
             {...strokedRectCoords}
+            scale={titleScale}
             title={
               <TextWithBackground
-                stageWidth={stageWidth}
-                stageHeight={stageHeight}
+                strokedRectWidth={strokedRectDimensions.width}
+                strokedRectHeight={strokedRectDimensions.height}
+                strokedRectCoords={strokedRectCoords}
+                scale={titleScale}
               />
             }
           />
