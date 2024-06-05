@@ -137,7 +137,7 @@ export default memo(function SolarPanelArea({
     onChange(newRect);
   };
 
-  const handleDragMove = (e) => {
+  const handleDragEnd = (e) => {
     const newCoords = {
       x: e.target.x() + rect.x,
       y: e.target.y() + rect.y,
@@ -149,9 +149,10 @@ export default memo(function SolarPanelArea({
   return (
     <Group
       draggable
+      // onDragMove={(e) => e.evt.stopPropagation()}
       onClick={handleRectClick}
       onTap={handleRectClick}
-      onDragEnd={handleDragMove}
+      onDragEnd={handleDragEnd}
     >
       <Rect
         ref={rectRef}
