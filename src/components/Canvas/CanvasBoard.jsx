@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layer, Stage } from "react-konva";
 import MainRect from "./MainRect";
 import StrokedRect from "./StrokedRect";
@@ -8,6 +8,8 @@ import SolarPanelAreas from "./SolarPanelAreas";
 import CurrentAddingSolarPanelArea from "./SolarPanelAreas/CurrentAddingSolarPanelArea";
 import { throttle } from "../../utils/throttle";
 import { IsExceededRoofArea, createSolarPanel } from "../../utils/SolarPanel";
+import useStageZoom from "../../hooks/useStageZoom";
+import ScaleButtons from "./ScaleButtons";
 
 const stageWidth = window.innerWidth;
 const stageHeight = window.innerHeight;
@@ -45,6 +47,8 @@ export default function CanvasBoard() {
   });
   const [strokedRectCoords, setStrokedRectCoords] =
     useState(STROKED_RECT_COORDS);
+  const { stageRef, stageScale, stagePosition, increaseScale, decreaseScale } =
+    useStageZoom();
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
@@ -92,6 +96,12 @@ export default function CanvasBoard() {
   };
 
   // TODO: Control main rect drag
+  // const handleDragMove = (e) => {
+  //   setMainRectCoords((prevCoords) => ({
+  //     x: e.target.x() + prevCoords.x,
+  //     y: e.target.y() + prevCoords.y,
+  //   }));
+  // };
 
   const checkDeselect = (e) => {
     // deselect when clicked on empty area
@@ -116,23 +126,28 @@ export default function CanvasBoard() {
       className={`grid h-dvh w-dvw place-content-center overflow-hidden bg-neutral-300 ${
         isHovering ? "cursor-move" : ""
       } ${isAddingSolarPanelArea ? "cursor-crosshair" : ""}`}
+      tabIndex={0}
       onMouseMoveCapture={handleMouseMove}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onKeyDown={handleKeyDown}
-      tabIndex={0}
     >
       <Stage
+        ref={stageRef}
         width={stageWidth}
         height={stageHeight}
-        onMouseDown={checkDeselect}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stagePosition.x}
+        y={stagePosition.y}
         onTouchStart={checkDeselect}
+        onMouseDown={checkDeselect}
       >
         <Layer
           draggable
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          // onDragMove={handleDragEnd}
+          // onDragMove={handleDragMove}
         >
           <MainRect {...mainRectCoords} {...mainRectDimensions} />
           <StrokedRect
@@ -178,6 +193,11 @@ export default function CanvasBoard() {
         {isAddingSolarPanelArea ? "Adding" : "Add Solar Panel Area"}
       </button>
       {isAddingSolarPanelArea && <MouseAxises mousePosition={mousePosition} />}
+      <ScaleButtons
+        stageScale={stageScale}
+        increaseScale={increaseScale}
+        decreaseScale={decreaseScale}
+      />
     </div>
   );
 }
