@@ -12,18 +12,18 @@ import { IsExceededRoofArea, createSolarPanel } from "../../utils/SolarPanel";
 const stageWidth = window.innerWidth;
 const stageHeight = window.innerHeight;
 
-const mainRectWidth = 800;
-const mainRectHeight = 400;
+const MAIN_RECT_WIDTH = 1000;
+const MAIN_RECT_HEIGHT = 500;
 const MAIN_RECT_COORDS = {
-  x: stageWidth / 2 - mainRectWidth / 2,
-  y: stageHeight / 2 - mainRectHeight / 2,
+  x: stageWidth / 2 - MAIN_RECT_WIDTH / 2,
+  y: stageHeight / 2 - MAIN_RECT_HEIGHT / 2,
 };
 
-const strokedRectWidth = 600;
-const strokedRectHeight = 300;
-const strokedRectCoords = {
-  x: stageWidth / 2 - strokedRectWidth / 2,
-  y: stageHeight / 2 - strokedRectHeight / 2,
+const STROKED_RECT_WIDTH = 600;
+const STROKED_RECT_HEIGHT = 300;
+const STROKED_RECT_COORDS = {
+  x: stageWidth / 2 - STROKED_RECT_WIDTH / 2,
+  y: stageHeight / 2 - STROKED_RECT_HEIGHT / 2,
 };
 
 export default function CanvasBoard() {
@@ -31,9 +31,20 @@ export default function CanvasBoard() {
   const [isAddingSolarPanelArea, setIsAddingSolarPanelArea] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [rectangles, setRectangles] = useState([]);
+  const [selectedRect, selectRect] = useState(null);
   const [startPos, setStartPos] = useState(null);
   const [currentPos, setCurrentPos] = useState(null);
+  const [mainRectDimensions, setMainRectDimensions] = useState({
+    width: MAIN_RECT_WIDTH,
+    height: MAIN_RECT_HEIGHT,
+  });
   const [mainRectCoords, setMainRectCoords] = useState(MAIN_RECT_COORDS);
+  const [strokedRectDimensions, setStrokedRectDimensions] = useState({
+    width: STROKED_RECT_WIDTH,
+    height: STROKED_RECT_HEIGHT,
+  });
+  const [strokedRectCoords, setStrokedRectCoords] =
+    useState(STROKED_RECT_COORDS);
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
@@ -48,8 +59,7 @@ export default function CanvasBoard() {
     if (
       startPos &&
       IsExceededRoofArea(createSolarPanel(startPos, currentCoords), {
-        width: mainRectWidth,
-        height: mainRectHeight,
+        ...mainRectDimensions,
         ...mainRectCoords,
       })
     )
@@ -81,12 +91,24 @@ export default function CanvasBoard() {
     }
   };
 
-  const handleDragEnd = (event) => {
-    console.log("event.target", event.target);
-    setMainRectCoords({
-      x: event.target.attrs.x,
-      y: event.target.attrs.y,
-    });
+  // TODO: Control main rect drag
+
+  const checkDeselect = (e) => {
+    // deselect when clicked on empty area
+    const clickedOnEmpty =
+      e.target === e.target.getStage() ||
+      e.target.parent === e.target.getLayer();
+    if (clickedOnEmpty) {
+      selectRect(null);
+    }
+  };
+
+  const handleRectChange = (i) => (newAttrs) => {
+    setRectangles((prevRects) =>
+      prevRects.map((rect, index) =>
+        index === i ? { ...rect, ...newAttrs } : rect,
+      ),
+    );
   };
 
   return (
@@ -100,22 +122,23 @@ export default function CanvasBoard() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      <Stage width={stageWidth} height={stageHeight}>
+      <Stage
+        width={stageWidth}
+        height={stageHeight}
+        onMouseDown={checkDeselect}
+        onTouchStart={checkDeselect}
+      >
         <Layer
           draggable
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          // onDragMove={handleDragEnd}
         >
-          <MainRect
-            {...mainRectCoords}
-            width={mainRectWidth}
-            height={mainRectHeight}
-          />
+          <MainRect {...mainRectCoords} {...mainRectDimensions} />
           <StrokedRect
             stageWidth={stageWidth}
             stageHeight={stageHeight}
-            width={600}
-            height={300}
+            {...strokedRectDimensions}
             {...strokedRectCoords}
             title={
               <TextWithBackground
@@ -128,18 +151,19 @@ export default function CanvasBoard() {
           <SolarPanelAreas
             rectangles={rectangles}
             roof={{
-              width: mainRectWidth,
-              height: mainRectHeight,
+              ...mainRectDimensions,
               ...mainRectCoords,
             }}
+            selectRect={selectRect}
+            selectedRect={selectedRect}
+            onChange={handleRectChange}
           />
 
           <CurrentAddingSolarPanelArea
             startPos={startPos}
             currentPos={currentPos}
             roof={{
-              width: mainRectWidth,
-              height: mainRectHeight,
+              ...mainRectDimensions,
               ...mainRectCoords,
             }}
           />
