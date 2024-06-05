@@ -36,6 +36,10 @@ export default function CanvasBoard() {
   const [selectedRect, selectRect] = useState(null);
   const [startPos, setStartPos] = useState(null);
   const [currentPos, setCurrentPos] = useState(null);
+  const [layerDimensions, setLayerDimensions] = useState({
+    x: 0,
+    y: 0,
+  });
   const [mainRectDimensions, setMainRectDimensions] = useState({
     width: MAIN_RECT_WIDTH,
     height: MAIN_RECT_HEIGHT,
@@ -102,12 +106,21 @@ export default function CanvasBoard() {
   };
 
   // TODO: Control main rect drag
-  // const handleDragMove = (e) => {
-  //   setMainRectCoords((prevCoords) => ({
-  //     x: e.target.x() + prevCoords.x,
-  //     y: e.target.y() + prevCoords.y,
-  //   }));
-  // };
+  const handleDragMove = (e) => {
+    const newX = e.target.x();
+    const newY = e.target.y();
+    setLayerDimensions({ x: newX, y: newY });
+
+    setMainRectCoords({
+      x: MAIN_RECT_COORDS.x + newX / 12,
+      y: MAIN_RECT_COORDS.y + newY / 12,
+    });
+
+    // setStrokedRectCoords({
+    //   x: STROKED_RECT_COORDS.x + newX,
+    //   y: STROKED_RECT_COORDS.y + newY,
+    // });
+  };
 
   const checkDeselect = (e) => {
     // deselect when clicked on empty area
@@ -150,10 +163,12 @@ export default function CanvasBoard() {
         onMouseDown={checkDeselect}
       >
         <Layer
-          draggable
+          x={layerDimensions.x}
+          y={layerDimensions.y}
+          // draggable
+          // onDragMove={handleDragMove}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          // onDragMove={handleDragMove}
         >
           <MainRect {...mainRectCoords} {...mainRectDimensions} />
           <StrokedRect
