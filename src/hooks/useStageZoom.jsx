@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const CHANGE_RATIO = 1.05;
-const SCALE_LIMITS = {
+const TITLE_CHANGE_RATIO = 1.04;
+export const SCALE_LIMITS = {
   min: 0.01,
-  max: 100,
+  max: 10,
 };
 
 const isExceededScaleMinLimit = (scale) => scale < SCALE_LIMITS.min;
@@ -14,14 +15,17 @@ export default function useStageZoom() {
   const stageRef = useRef(null);
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
+  const [titleScale, setTitleScale] = useState(1);
 
   const makeSureNotExceedScaleLimits = useCallback((stageScale) => {
     if (isExceededScaleMinLimit(stageScale)) {
       setStageScale(SCALE_LIMITS.min);
+      setTitleScale(SCALE_LIMITS.max);
       return false;
     }
     if (isExceededScaleMaxLimit(stageScale)) {
       setStageScale(SCALE_LIMITS.max);
+      setTitleScale(SCALE_LIMITS.min);
       return false;
     }
 
@@ -32,12 +36,14 @@ export default function useStageZoom() {
     if (!makeSureNotExceedScaleLimits(stageScale)) return;
 
     setStageScale((prevScale) => prevScale * CHANGE_RATIO);
+    setTitleScale((prevScale) => prevScale / CHANGE_RATIO);
   };
 
   const decreaseScale = () => {
     if (!makeSureNotExceedScaleLimits(stageScale)) return;
 
     setStageScale((prevScale) => prevScale / CHANGE_RATIO);
+    setTitleScale((prevScale) => prevScale * CHANGE_RATIO);
   };
 
   useEffect(() => {
@@ -58,8 +64,10 @@ export default function useStageZoom() {
 
       const newScale =
         direction > 0 ? oldScale * CHANGE_RATIO : oldScale / CHANGE_RATIO;
-
-      console.log("newScale", newScale);
+      const newTitleScale =
+        direction > 0
+          ? titleScale / TITLE_CHANGE_RATIO
+          : titleScale * TITLE_CHANGE_RATIO;
 
       if (!makeSureNotExceedScaleLimits(newScale)) return;
 
@@ -71,6 +79,7 @@ export default function useStageZoom() {
       };
 
       setStagePosition(newPos);
+      setTitleScale(newTitleScale);
     };
 
     stage.on("wheel", handleWheel);
@@ -78,7 +87,14 @@ export default function useStageZoom() {
     return () => {
       stage.off("wheel", handleWheel);
     };
-  }, [stageScale, makeSureNotExceedScaleLimits]);
+  }, [stageScale, titleScale, makeSureNotExceedScaleLimits]);
 
-  return { stageRef, stageScale, stagePosition, increaseScale, decreaseScale };
+  return {
+    stageRef,
+    stageScale,
+    stagePosition,
+    titleScale,
+    increaseScale,
+    decreaseScale,
+  };
 }
