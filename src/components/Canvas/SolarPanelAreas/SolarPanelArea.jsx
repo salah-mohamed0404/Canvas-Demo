@@ -102,7 +102,7 @@ export default memo(function SolarPanelArea({
     // but in the store we have only width and height
     // to match the data better we will reset scale on transform end
     const node = rectRef.current;
-    const newX = node.x() - 2 * solarPanelWidth;
+    const newX = node.x();
     const newY = node.y();
     const scaleX = node.scaleX();
     const scaleY = node.scaleY();
