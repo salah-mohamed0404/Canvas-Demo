@@ -54,6 +54,7 @@ export default memo(function SolarPanelArea({
     if (isSelected) {
       trRef.current.nodes([rectRef.current]);
       trRef.current.getLayer().batchDraw();
+      trRef.current.moveToTop();
     }
   }, [isSelected, onChange]);
 
@@ -101,26 +102,26 @@ export default memo(function SolarPanelArea({
     // but in the store we have only width and height
     // to match the data better we will reset scale on transform end
     const node = rectRef.current;
-    const newX = node.x();
+    const newX = node.x() - 2 * solarPanelWidth;
     const newY = node.y();
     const scaleX = node.scaleX();
     const scaleY = node.scaleY();
-
-    // reset it back
-    node.scaleX(1);
-    node.scaleY(1);
-
-    const lastSolarPanel = solarPanels
-      .filter((solarPanel) => solarPanel.status === SOLAR_PANEL_STATUS.NORMAL)
-      .at(-1);
 
     const width = node.width();
     const height = node.height();
     const newWidth = width * scaleX;
     const newHeight = height * scaleY;
 
+    // reset it back
+    node.scaleX(1);
+    node.scaleY(1);
+
     if (solarPanels.length === 0)
       return onChange({ x: newX, y: newY, width: newWidth, height: newHeight });
+
+    const lastSolarPanel = solarPanels
+      .filter((solarPanel) => solarPanel.status === SOLAR_PANEL_STATUS.NORMAL)
+      .at(-1);
 
     const spaceToClipX =
       newWidth - (lastSolarPanel.x + lastSolarPanel.width - newX);
@@ -149,7 +150,6 @@ export default memo(function SolarPanelArea({
   return (
     <Group
       draggable
-      // onDragMove={(e) => e.evt.stopPropagation()}
       onClick={handleRectClick}
       onTap={handleRectClick}
       onDragEnd={handleDragEnd}
