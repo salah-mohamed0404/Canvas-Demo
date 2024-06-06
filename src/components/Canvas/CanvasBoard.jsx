@@ -116,14 +116,13 @@ export default function CanvasBoard() {
       y: MAIN_RECT_COORDS.y + newY / 12,
     });
 
-    // setStrokedRectCoords({
-    //   x: STROKED_RECT_COORDS.x + newX,
-    //   y: STROKED_RECT_COORDS.y + newY,
-    // });
+    setStrokedRectCoords({
+      x: STROKED_RECT_COORDS.x + newX / 12,
+      y: STROKED_RECT_COORDS.y + newY / 12,
+    });
   };
 
   const checkDeselect = (e) => {
-    // deselect when clicked on empty area
     const clickedOnEmpty =
       e.target === e.target.getStage() ||
       e.target.parent === e.target.getLayer();
@@ -186,7 +185,15 @@ export default function CanvasBoard() {
               />
             }
           />
+        </Layer>
 
+        <Layer
+          x={layerDimensions.x}
+          y={layerDimensions.y}
+          draggable
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <SolarPanelAreas
             rectangles={rectangles}
             roof={{
@@ -196,6 +203,7 @@ export default function CanvasBoard() {
             selectRect={selectRect}
             selectedRect={selectedRect}
             onChange={handleRectChange}
+            scale={stageScale}
           />
 
           <CurrentAddingSolarPanelArea
