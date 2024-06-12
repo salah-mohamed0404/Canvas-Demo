@@ -26,8 +26,8 @@ export const getSolarPanels = (
   const endX = endCoords.x;
   const endY = endCoords.y;
 
-  for (let newX = startX; newX < endX; newX += solarPanelWidthWithSpacing) {
-    for (let newY = startY; newY < endY; newY += solarPanelHeightWithSpacing) {
+  for (let newY = startY; newY < endY; newY += solarPanelHeightWithSpacing) {
+    for (let newX = startX; newX < endX; newX += solarPanelWidthWithSpacing) {
       const solarPanel = {
         x: newX,
         y: newY,
