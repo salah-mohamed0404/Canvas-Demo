@@ -3,7 +3,7 @@ import { Layer, Stage } from "react-konva";
 import MainRect from "./MainRect";
 import StrokedRect from "./StrokedRect";
 import TextWithBackground from "./TextWithBackground";
-import MouseAxises from "./MouseAxises";
+import Axises from "./Axises";
 import SolarPanelAreas from "./SolarPanelAreas";
 import CurrentAddingSolarPanelArea from "./SolarPanelAreas/CurrentAddingSolarPanelArea";
 import ScaleButtons from "./ScaleButtons";
@@ -84,6 +84,7 @@ export default function CanvasBoard() {
     setIsAddingSolarPanelArea(false);
 
     setRectangles([...rectangles, createSolarPanel(startPos, currentPos)]);
+    selectRect(rectangles?.length);
     setStartPos(null);
     setCurrentPos(null);
   };
@@ -209,7 +210,7 @@ export default function CanvasBoard() {
       >
         {isAddingSolarPanelArea ? "Adding" : "Add Solar Panel Area"}
       </button>
-      {isAddingSolarPanelArea && <MouseAxises mousePosition={mousePosition} />}
+      {isAddingSolarPanelArea && <Axises position={mousePosition} />}
       <ScaleButtons
         stageScale={stageScale}
         increaseScale={increaseScale}
