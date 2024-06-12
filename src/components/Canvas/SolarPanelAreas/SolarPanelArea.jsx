@@ -114,6 +114,8 @@ export default memo(function SolarPanelArea({
   };
 
   const handleRemoveSolarPanel = (index) => () => {
+    if (!isSelected) return;
+
     setSolarPanels((prevSolarPanels) =>
       prevSolarPanels.map((solarPanel, i) =>
         i === index
