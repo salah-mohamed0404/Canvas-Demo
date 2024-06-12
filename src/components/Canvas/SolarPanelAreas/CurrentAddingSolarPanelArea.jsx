@@ -16,6 +16,7 @@ export default function CurrentAddingSolarPanelArea({
           height: Math.abs(startPos.y - currentPos.y),
         }}
         roof={roof}
+        isCurrentAdding
       />
     )
   );
