@@ -11,6 +11,7 @@ import {
   solarPanelWidth,
   solarPanelsSpacing,
 } from "../../../utils/SolarPanel";
+import DimensionRect from "./DimensionRect";
 
 export default memo(function SolarPanelArea({
   rect,
@@ -24,6 +25,8 @@ export default memo(function SolarPanelArea({
   const rectRef = useRef();
   const trRef = useRef();
   const { image, imageRef } = useImage("Logo.svg");
+  const [currentWidth, setCurrentWidth] = useState(rect.width);
+  const [currentHeight, setCurrentHeight] = useState(rect.height);
 
   if (rect.isNew && rectRef.current && solarPanels.length !== 0) {
     const node = rectRef.current;
@@ -77,6 +80,8 @@ export default memo(function SolarPanelArea({
       solarPanelsSpacing,
     });
 
+    setCurrentWidth(rect.width);
+    setCurrentHeight(rect.height);
     setSolarPanels((prevSolarPanels) =>
       updateSolarPanels(prevSolarPanels, newSolarPanels),
     );
@@ -93,6 +98,9 @@ export default memo(function SolarPanelArea({
       width: newBox.width / scale,
       height: newBox.height / scale,
     };
+
+    setCurrentWidth(newRect.width);
+    setCurrentHeight(newRect.height);
 
     const newSolarPanels = getSolarPanels(newRect, roof, {
       solarPanelWidth,
@@ -180,6 +188,20 @@ export default memo(function SolarPanelArea({
         height={rect.height}
         stroke="#111"
       />
+      {rectRef.current ? (
+        <>
+          <DimensionRect
+            x={rectRef.current.x()}
+            y={rectRef.current.y() + currentHeight / 2}
+            height={currentHeight}
+          />
+          <DimensionRect
+            x={rectRef.current.x() + currentWidth / 2}
+            y={rectRef.current.y()}
+            width={currentWidth}
+          />
+        </>
+      ) : null}
       {isSelected && (
         <AreaTransformer
           trRef={trRef}
