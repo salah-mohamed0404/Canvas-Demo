@@ -36,21 +36,7 @@ export default function CanvasBoard() {
   const [selectedRect, selectRect] = useState(null);
   const [startPos, setStartPos] = useState(null);
   const [currentPos, setCurrentPos] = useState(null);
-  const [layerDimensions, setLayerDimensions] = useState({
-    x: 0,
-    y: 0,
-  });
-  const [mainRectDimensions, setMainRectDimensions] = useState({
-    width: MAIN_RECT_WIDTH,
-    height: MAIN_RECT_HEIGHT,
-  });
-  const [mainRectCoords, setMainRectCoords] = useState(MAIN_RECT_COORDS);
-  const [strokedRectDimensions, setStrokedRectDimensions] = useState({
-    width: STROKED_RECT_WIDTH,
-    height: STROKED_RECT_HEIGHT,
-  });
-  const [strokedRectCoords, setStrokedRectCoords] =
-    useState(STROKED_RECT_COORDS);
+  const [layerCoords, setLayerCoords] = useState({ x: 0, y: 0 });
   const {
     stageRef,
     stageScale,
@@ -66,26 +52,36 @@ export default function CanvasBoard() {
   const handleMouseMove = throttle((event) => {
     if (!isAddingSolarPanelArea) return;
 
-    const currentCoords = { x: event.clientX, y: event.clientY };
+    const newCoords = {
+      x: event.clientX - layerCoords.x,
+      y: event.clientY - layerCoords.y,
+    };
 
-    setMousePosition(currentCoords);
+    setMousePosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
 
     if (
       startPos &&
-      IsExceededRoofArea(createSolarPanel(startPos, currentCoords), {
-        ...mainRectDimensions,
-        ...mainRectCoords,
+      IsExceededRoofArea(createSolarPanel(startPos, newCoords), {
+        width: MAIN_RECT_WIDTH,
+        height: MAIN_RECT_HEIGHT,
+        ...MAIN_RECT_COORDS,
       })
     )
       return;
 
-    setCurrentPos(currentCoords);
+    setCurrentPos(newCoords);
   }, 5);
 
   const handleMouseDown = (event) => {
     if (!isAddingSolarPanelArea) return;
 
-    setStartPos({ x: event.clientX, y: event.clientY });
+    setStartPos({
+      x: event.clientX - layerCoords.x,
+      y: event.clientY - layerCoords.y,
+    });
   };
 
   const handleMouseUp = () => {
@@ -105,21 +101,9 @@ export default function CanvasBoard() {
     }
   };
 
-  // TODO: Control main rect drag
-  const handleDragMove = (e) => {
-    const newX = e.target.x();
-    const newY = e.target.y();
-    setLayerDimensions({ x: newX, y: newY });
-
-    setMainRectCoords({
-      x: MAIN_RECT_COORDS.x + newX / 12,
-      y: MAIN_RECT_COORDS.y + newY / 12,
-    });
-
-    setStrokedRectCoords({
-      x: STROKED_RECT_COORDS.x + newX / 12,
-      y: STROKED_RECT_COORDS.y + newY / 12,
-    });
+  const handleDragMove = (event) => {
+    const target = event.target;
+    setLayerCoords({ x: target.x(), y: target.y() });
   };
 
   const checkDeselect = (e) => {
@@ -162,25 +146,30 @@ export default function CanvasBoard() {
         onMouseDown={checkDeselect}
       >
         <Layer
-          x={layerDimensions.x}
-          y={layerDimensions.y}
-          // draggable
-          // onDragMove={handleDragMove}
+          x={layerCoords.x}
+          y={layerCoords.y}
+          draggable
+          onDragMove={handleDragMove}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <MainRect {...mainRectCoords} {...mainRectDimensions} />
+          <MainRect
+            height={MAIN_RECT_HEIGHT}
+            width={MAIN_RECT_WIDTH}
+            {...MAIN_RECT_COORDS}
+          />
           <StrokedRect
             stageWidth={stageWidth}
             stageHeight={stageHeight}
-            {...strokedRectDimensions}
-            {...strokedRectCoords}
+            width={STROKED_RECT_WIDTH}
+            height={STROKED_RECT_HEIGHT}
+            {...STROKED_RECT_COORDS}
             scale={titleScale}
             title={
               <TextWithBackground
-                strokedRectWidth={strokedRectDimensions.width}
-                strokedRectHeight={strokedRectDimensions.height}
-                strokedRectCoords={strokedRectCoords}
+                strokedRectWidth={STROKED_RECT_WIDTH}
+                strokedRectHeight={STROKED_RECT_HEIGHT}
+                strokedRectCoords={STROKED_RECT_COORDS}
                 scale={titleScale}
               />
             }
@@ -188,8 +177,8 @@ export default function CanvasBoard() {
         </Layer>
 
         <Layer
-          x={layerDimensions.x}
-          y={layerDimensions.y}
+          x={layerCoords.x}
+          y={layerCoords.y}
           draggable
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -197,8 +186,9 @@ export default function CanvasBoard() {
           <SolarPanelAreas
             rectangles={rectangles}
             roof={{
-              ...mainRectDimensions,
-              ...mainRectCoords,
+              width: MAIN_RECT_WIDTH,
+              height: MAIN_RECT_HEIGHT,
+              ...MAIN_RECT_COORDS,
             }}
             selectRect={selectRect}
             selectedRect={selectedRect}
@@ -210,8 +200,9 @@ export default function CanvasBoard() {
             startPos={startPos}
             currentPos={currentPos}
             roof={{
-              ...mainRectDimensions,
-              ...mainRectCoords,
+              width: MAIN_RECT_WIDTH,
+              height: MAIN_RECT_HEIGHT,
+              ...MAIN_RECT_COORDS,
             }}
           />
         </Layer>
