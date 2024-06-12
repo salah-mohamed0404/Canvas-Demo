@@ -6,27 +6,21 @@ import TextWithBackground from "./TextWithBackground";
 import MouseAxises from "./MouseAxises";
 import SolarPanelAreas from "./SolarPanelAreas";
 import CurrentAddingSolarPanelArea from "./SolarPanelAreas/CurrentAddingSolarPanelArea";
-import { throttle } from "../../utils/throttle";
-import { IsExceededRoofArea, createSolarPanel } from "../../utils/SolarPanel";
-import useStageZoom from "../../hooks/useStageZoom";
 import ScaleButtons from "./ScaleButtons";
-
-const stageWidth = window.innerWidth;
-const stageHeight = window.innerHeight;
-
-const MAIN_RECT_WIDTH = 1000;
-const MAIN_RECT_HEIGHT = 500;
-const MAIN_RECT_COORDS = {
-  x: stageWidth / 2 - MAIN_RECT_WIDTH / 2,
-  y: stageHeight / 2 - MAIN_RECT_HEIGHT / 2,
-};
-
-const STROKED_RECT_WIDTH = 600;
-const STROKED_RECT_HEIGHT = 300;
-const STROKED_RECT_COORDS = {
-  x: stageWidth / 2 - STROKED_RECT_WIDTH / 2,
-  y: stageHeight / 2 - STROKED_RECT_HEIGHT / 2,
-};
+import useStageZoom from "../../hooks/useStageZoom";
+import { throttle } from "../../utils/throttle";
+import {
+  IsExceededRoofArea,
+  createSolarPanel,
+  MAIN_RECT_COORDS,
+  MAIN_RECT_HEIGHT,
+  MAIN_RECT_WIDTH,
+  STROKED_RECT_COORDS,
+  STROKED_RECT_HEIGHT,
+  STROKED_RECT_WIDTH,
+  STAGE_HEIGHT,
+  STAGE_WIDTH,
+} from "../../utils/SolarPanel";
 
 export default function CanvasBoard() {
   const [isHovering, setIsHovering] = useState(false);
@@ -136,8 +130,8 @@ export default function CanvasBoard() {
     >
       <Stage
         ref={stageRef}
-        width={stageWidth}
-        height={stageHeight}
+        width={STAGE_WIDTH}
+        height={STAGE_HEIGHT}
         scaleX={stageScale}
         scaleY={stageScale}
         x={stagePosition.x}
@@ -159,8 +153,8 @@ export default function CanvasBoard() {
             {...MAIN_RECT_COORDS}
           />
           <StrokedRect
-            stageWidth={stageWidth}
-            stageHeight={stageHeight}
+            stageWidth={STAGE_WIDTH}
+            stageHeight={STAGE_HEIGHT}
             width={STROKED_RECT_WIDTH}
             height={STROKED_RECT_HEIGHT}
             {...STROKED_RECT_COORDS}

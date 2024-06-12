@@ -1,15 +1,16 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Group, Rect, Transformer } from "react-konva";
+import { Group, Rect } from "react-konva";
+import SolarPanel from "./SolarPanel";
+import AreaTransformer from "./AreaTransformer";
+import useImage from "../../../hooks/useImage";
 import {
   SOLAR_PANEL_STATUS,
-  SOLAR_PANEL_STATUS_COLOR,
   getSolarPanels,
   updateSolarPanels,
+  solarPanelHeight,
+  solarPanelWidth,
+  solarPanelsSpacing,
 } from "../../../utils/SolarPanel";
-
-const solarPanelWidth = 50;
-const solarPanelHeight = 100;
-const solarPanelsSpacing = 2;
 
 export default memo(function SolarPanelArea({
   rect,
@@ -22,6 +23,7 @@ export default memo(function SolarPanelArea({
   const [solarPanels, setSolarPanels] = useState([]);
   const rectRef = useRef();
   const trRef = useRef();
+  const { image, imageRef } = useImage("Logo.svg");
 
   if (rect.isNew && rectRef.current && solarPanels.length !== 0) {
     const node = rectRef.current;
@@ -84,7 +86,7 @@ export default memo(function SolarPanelArea({
     selectRect();
   };
 
-  const handleResizeLimit = (oldBox, newBox) => {
+  const handleResize = (oldBox, newBox) => {
     const newRect = {
       x: rectRef.current.x(),
       y: rectRef.current.y(),
@@ -179,43 +181,24 @@ export default memo(function SolarPanelArea({
         stroke="#111"
       />
       {isSelected && (
-        <Transformer
-          ref={trRef}
-          anchorFill="#111"
-          anchorStroke="#111"
-          anchorCornerRadius={1000}
-          borderStroke="#111"
-          rotateEnabled={false}
-          keepRatio={false}
-          enabledAnchors={[
-            "top-left",
-            "top-right",
-            "bottom-left",
-            "bottom-right",
-          ]}
-          boundBoxFunc={handleResizeLimit}
+        <AreaTransformer
+          trRef={trRef}
+          onResize={handleResize}
           onTransformEnd={handleTransformEnd}
         />
       )}
       <Group>
         {solarPanels.map((solarPanel, i) => (
-          <Rect
+          <SolarPanel
             key={`solar-panel-${i}`}
-            x={solarPanel.x}
-            y={solarPanel.y}
-            width={solarPanelWidth}
-            height={solarPanelHeight}
-            fill={
-              solarPanel.isRemoved
-                ? SOLAR_PANEL_STATUS_COLOR.removed
-                : SOLAR_PANEL_STATUS_COLOR[solarPanel.status]
-            }
-            opacity={solarPanel.status === SOLAR_PANEL_STATUS.NORMAL ? 1 : 0.5}
-            onClick={
-              solarPanel.status === SOLAR_PANEL_STATUS.NORMAL
-                ? handleRemoveSolarPanel(i)
-                : null
-            }
+            solarPanel={solarPanel}
+            solarPanelWidth={solarPanelWidth}
+            solarPanelHeight={solarPanelHeight}
+            onRemoveSolarPanel={handleRemoveSolarPanel(i)}
+            hasLogoImage={i % 2 === 0}
+            image={image}
+            imageRef={imageRef}
+            isSelected={isSelected}
           />
         ))}
       </Group>
