@@ -22,14 +22,14 @@ export default memo(function DimensionRect({ x, y, width, height }) {
     <Group ref={ref}>
       <Rect
         x={x - (WIDTH * 3) / 5}
-        y={y - (HEIGHT * 3) / 4}
+        y={y - (HEIGHT * 3) / 10}
         width={WIDTH}
         height={HEIGHT}
         fill="#222"
       />
       <Text
-        x={x - (WIDTH * 3) / 4 + WIDTH / 3}
-        y={y - (HEIGHT * 3) / 4 + HEIGHT / 3}
+        x={x - (WIDTH * 3) / 4.5 + WIDTH / 3}
+        y={y - (HEIGHT * 3) / 10 + HEIGHT / 3}
         fill="#ffffff"
         fontSize={8}
         text={dimension}
