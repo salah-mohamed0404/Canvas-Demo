@@ -6,6 +6,7 @@ export default function SolarPanelAreas({
   selectRect,
   selectedRect,
   onChange,
+  scale,
 }) {
   return rectangles.map((rect, i) => (
     <SolarPanelArea
@@ -15,6 +16,7 @@ export default function SolarPanelAreas({
       selectRect={() => selectRect(i)}
       isSelected={i === selectedRect}
       onChange={onChange(i)}
+      scale={scale}
     />
   ));
 }
