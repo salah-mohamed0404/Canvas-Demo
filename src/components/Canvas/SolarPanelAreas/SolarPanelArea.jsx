@@ -20,6 +20,7 @@ export default memo(function SolarPanelArea({
   isSelected,
   onChange,
   scale,
+  isCurrentAdding,
 }) {
   const [solarPanels, setSolarPanels] = useState([]);
   const rectRef = useRef();
@@ -190,7 +191,7 @@ export default memo(function SolarPanelArea({
         height={rect.height}
         stroke="#111"
       />
-      {rectRef.current ? (
+      {rectRef.current && (isSelected || isCurrentAdding) ? (
         <>
           <DimensionRect
             x={rectRef.current.x()}
@@ -199,7 +200,7 @@ export default memo(function SolarPanelArea({
           />
           <DimensionRect
             x={rectRef.current.x() + currentWidth / 2}
-            y={rectRef.current.y()}
+            y={rectRef.current.y() + currentHeight}
             width={currentWidth}
           />
         </>
