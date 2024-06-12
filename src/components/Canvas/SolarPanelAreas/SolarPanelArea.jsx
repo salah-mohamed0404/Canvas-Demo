@@ -4,6 +4,7 @@ import {
   SOLAR_PANEL_STATUS,
   SOLAR_PANEL_STATUS_COLOR,
   getSolarPanels,
+  updateSolarPanels,
 } from "../../../utils/SolarPanel";
 
 const solarPanelWidth = 50;
@@ -16,6 +17,7 @@ export default memo(function SolarPanelArea({
   selectRect,
   isSelected,
   onChange,
+  scale,
 }) {
   const [solarPanels, setSolarPanels] = useState([]);
   const rectRef = useRef();
@@ -25,29 +27,37 @@ export default memo(function SolarPanelArea({
     const node = rectRef.current;
     const newX = node.attrs.x;
     const newY = node.attrs.y;
+    const width = node.attrs.width;
+    const height = node.attrs.height;
 
     const lastSolarPanel = solarPanels
       .filter((solarPanel) => solarPanel.status === SOLAR_PANEL_STATUS.NORMAL)
       .at(-1);
 
-    const width = node.attrs.width;
-    const height = node.attrs.height;
+    if (lastSolarPanel) {
+      const spaceToClipX =
+        width - (lastSolarPanel.x + lastSolarPanel.width - newX);
+      const spaceToClipY =
+        height - (lastSolarPanel.y + lastSolarPanel.height - newY);
 
-    const spaceToClipX =
-      width - (lastSolarPanel.x + lastSolarPanel.width - newX);
-    const spaceToClipY =
-      height - (lastSolarPanel.y + lastSolarPanel.height - newY);
+      const newRect = {
+        x: newX,
+        y: newY,
+        // set minimal value
+        width: width - spaceToClipX + solarPanelsSpacing,
+        height: height - spaceToClipY + solarPanelsSpacing,
+        isNew: false,
+      };
 
-    const newRect = {
-      x: newX,
-      y: newY,
-      // set minimal value
-      width: width - spaceToClipX + solarPanelsSpacing,
-      height: height - spaceToClipY + solarPanelsSpacing,
-      isNew: false,
-    };
-
-    onChange(newRect);
+      onChange(newRect);
+    } else
+      onChange({
+        x: newX,
+        y: newY,
+        width,
+        height,
+        isNew: false,
+      });
   }
 
   useEffect(() => {
@@ -59,13 +69,15 @@ export default memo(function SolarPanelArea({
   }, [isSelected, onChange]);
 
   useEffect(() => {
-    const newSolarPanels = getSolarPanels({}, rect, roof, {
+    const newSolarPanels = getSolarPanels(rect, roof, {
       solarPanelWidth,
       solarPanelHeight,
       solarPanelsSpacing,
     });
 
-    setSolarPanels(newSolarPanels);
+    setSolarPanels((prevSolarPanels) =>
+      updateSolarPanels(prevSolarPanels, newSolarPanels),
+    );
   }, [rect, roof]);
 
   const handleRectClick = () => {
@@ -73,9 +85,14 @@ export default memo(function SolarPanelArea({
   };
 
   const handleResizeLimit = (oldBox, newBox) => {
-    // if (IsExceededRoofArea(newBox, roof)) return oldBox;
+    const newRect = {
+      x: rectRef.current.x(),
+      y: rectRef.current.y(),
+      width: newBox.width / scale,
+      height: newBox.height / scale,
+    };
 
-    const newSolarPanels = getSolarPanels(oldBox, newBox, roof, {
+    const newSolarPanels = getSolarPanels(newRect, roof, {
       solarPanelWidth,
       solarPanelHeight,
       solarPanelsSpacing,
@@ -115,13 +132,12 @@ export default memo(function SolarPanelArea({
     // reset it back
     node.scaleX(1);
     node.scaleY(1);
-
-    if (solarPanels.length === 0)
-      return onChange({ x: newX, y: newY, width: newWidth, height: newHeight });
-
     const lastSolarPanel = solarPanels
       .filter((solarPanel) => solarPanel.status === SOLAR_PANEL_STATUS.NORMAL)
       .at(-1);
+
+    if (solarPanels.length === 0 || !lastSolarPanel)
+      return onChange({ x: newX, y: newY, width: newWidth, height: newHeight });
 
     const spaceToClipX =
       newWidth - (lastSolarPanel.x + lastSolarPanel.width - newX);
