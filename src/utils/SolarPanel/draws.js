@@ -26,6 +26,13 @@ export const getSolarPanels = (
   const endX = endCoords.x;
   const endY = endCoords.y;
 
+  const totalXPanels = Math.floor(
+    (endX + 10 - solarPanelArea.x) / solarPanelWidthWithSpacing,
+  );
+  const totalYPanels = Math.floor(
+    (endY - solarPanelArea.y) / solarPanelHeightWithSpacing,
+  );
+
   for (let newY = startY; newY < endY; newY += solarPanelHeightWithSpacing) {
     for (let newX = startX; newX < endX; newX += solarPanelWidthWithSpacing) {
       const solarPanel = {
@@ -49,7 +56,7 @@ export const getSolarPanels = (
     }
   }
 
-  return newSolarPanels;
+  return { newSolarPanels, totalXPanels, totalYPanels };
 };
 
 export const createSolarPanel = (startPos, currentPos) => {
