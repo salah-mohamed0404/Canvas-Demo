@@ -201,6 +201,12 @@ export default function CanvasBoard() {
             }}
           />
         </Layer>
+
+        <Layer>
+          {isAddingSolarPanelArea && (
+            <Axises position={mousePosition} roof={MAIN_RECT_COORDS} />
+          )}
+        </Layer>
       </Stage>
 
       <button
@@ -210,7 +216,6 @@ export default function CanvasBoard() {
       >
         {isAddingSolarPanelArea ? "Adding" : "Add Solar Panel Area"}
       </button>
-      {isAddingSolarPanelArea && <Axises position={mousePosition} />}
       <ScaleButtons
         stageScale={stageScale}
         increaseScale={increaseScale}
