@@ -1,8 +1,6 @@
 import { memo, useEffect, useRef } from "react";
-import { Group, Rect, Text } from "react-konva";
-
-const WIDTH = 50;
-const HEIGHT = 20;
+import { Group } from "react-konva";
+import { Html } from "react-konva-utils";
 
 const calculateDimension = (dimension) => `${(dimension / 100).toFixed(2)} m`;
 
@@ -20,20 +18,25 @@ export default memo(function DimensionRect({ x, y, width, height }) {
 
   return (
     <Group ref={ref}>
-      <Rect
-        x={x - (WIDTH * 3) / 5}
-        y={y - (HEIGHT * 3) / 10}
-        width={WIDTH}
-        height={HEIGHT}
-        fill="#222"
-      />
-      <Text
-        x={x - (WIDTH * 3) / 4.5 + WIDTH / 3}
-        y={y - (HEIGHT * 3) / 10 + HEIGHT / 3}
-        fill="#ffffff"
-        fontSize={8}
-        text={dimension}
-      />
+      <Html
+        divProps={{
+          style: {
+            position: "absolute",
+            top: `${y}px`,
+            left: `${x}px`,
+            translate: "-50% -50%",
+            padding: "4px 8px",
+            backgroundColor: "#222",
+            color: "#ffffff",
+            fontSize: "8px",
+            textAlign: "center",
+            fontWeight: "bold",
+            zIndex: 1000,
+          },
+        }}
+      >
+        {dimension}
+      </Html>
     </Group>
   );
 });
