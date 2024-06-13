@@ -12,6 +12,8 @@ import {
   solarPanelsSpacing,
 } from "../../../utils/SolarPanel";
 import DimensionRect from "./DimensionRect";
+import Axises from "../Axises";
+import TotalPanelsCount from "./TotalPanelsCount";
 
 export default memo(function SolarPanelArea({
   rect,
@@ -28,6 +30,7 @@ export default memo(function SolarPanelArea({
   const { image, imageRef } = useImage("Logo.svg");
   const [currentWidth, setCurrentWidth] = useState(rect.width);
   const [currentHeight, setCurrentHeight] = useState(rect.height);
+  const [totalPanelCount, setTotalPanelCount] = useState({ x: 0, y: 0 });
 
   if (rect.isNew && rectRef.current && solarPanels.length !== 0) {
     const node = rectRef.current;
@@ -75,14 +78,19 @@ export default memo(function SolarPanelArea({
   }, [isSelected, onChange]);
 
   useEffect(() => {
-    const newSolarPanels = getSolarPanels(rect, roof, {
-      solarPanelWidth,
-      solarPanelHeight,
-      solarPanelsSpacing,
-    });
+    const { newSolarPanels, totalXPanels, totalYPanels } = getSolarPanels(
+      rect,
+      roof,
+      {
+        solarPanelWidth,
+        solarPanelHeight,
+        solarPanelsSpacing,
+      },
+    );
 
     setCurrentWidth(rect.width);
     setCurrentHeight(rect.height);
+    setTotalPanelCount({ x: totalXPanels, y: totalYPanels });
     setSolarPanels((prevSolarPanels) =>
       updateSolarPanels(prevSolarPanels, newSolarPanels),
     );
@@ -103,12 +111,17 @@ export default memo(function SolarPanelArea({
     setCurrentWidth(newRect.width);
     setCurrentHeight(newRect.height);
 
-    const newSolarPanels = getSolarPanels(newRect, roof, {
-      solarPanelWidth,
-      solarPanelHeight,
-      solarPanelsSpacing,
-    });
+    const { newSolarPanels, totalXPanels, totalYPanels } = getSolarPanels(
+      newRect,
+      roof,
+      {
+        solarPanelWidth,
+        solarPanelHeight,
+        solarPanelsSpacing,
+      },
+    );
 
+    setTotalPanelCount({ x: totalXPanels, y: totalYPanels });
     setSolarPanels(newSolarPanels);
 
     return newBox;
@@ -203,6 +216,14 @@ export default memo(function SolarPanelArea({
             y={rectRef.current.y() + currentHeight}
             width={currentWidth}
           />
+          <Axises
+            position={{ x: rectRef.current.x(), y: rectRef.current.y() }}
+            roof={roof}
+          />
+          {/* <TotalPanelsCount
+            totalCountX={totalPanelCount.x}
+            totalCountY={totalPanelCount.y}
+          /> */}
         </>
       ) : null}
       {isSelected && (
