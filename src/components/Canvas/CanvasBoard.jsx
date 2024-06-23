@@ -143,7 +143,7 @@ export default function CanvasBoard() {
         <Layer
           x={layerCoords.x}
           y={layerCoords.y}
-          draggable
+          draggable={!isAddingSolarPanelArea}
           onDragMove={handleDragMove}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -174,7 +174,7 @@ export default function CanvasBoard() {
         <Layer
           x={layerCoords.x}
           y={layerCoords.y}
-          draggable
+          draggable={!isAddingSolarPanelArea}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
