@@ -120,7 +120,6 @@ export default memo(function SolarPanelArea({
         solarPanelsSpacing,
       },
     );
-
     setTotalPanelCount({ x: totalXPanels, y: totalYPanels });
     setSolarPanels(newSolarPanels);
 
@@ -220,10 +219,14 @@ export default memo(function SolarPanelArea({
             position={{ x: rectRef.current.x(), y: rectRef.current.y() }}
             roof={roof}
           />
-          {/* <TotalPanelsCount
+          <TotalPanelsCount
+            position={{
+              x: rectRef.current.x() + currentWidth + 20, // 20 is the space between the rect and total panels count
+              y: rectRef.current.y() + currentHeight / 2, // the division by 2 is for the center
+            }}
             totalCountX={totalPanelCount.x}
             totalCountY={totalPanelCount.y}
-          /> */}
+          />
         </>
       ) : null}
       {isSelected && (
