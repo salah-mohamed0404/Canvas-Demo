@@ -14,6 +14,7 @@ import {
 import DimensionRect from "./DimensionRect";
 import Axises from "../Axises";
 import TotalPanelsCount from "./TotalPanelsCount";
+import SettingsDeleteTooltip from "./SettingsDeleteTooltip";
 
 export default memo(function SolarPanelArea({
   rect,
@@ -21,6 +22,7 @@ export default memo(function SolarPanelArea({
   selectRect,
   isSelected,
   onChange,
+  onDelete,
   scale,
   isCurrentAdding,
 }) {
@@ -205,6 +207,15 @@ export default memo(function SolarPanelArea({
       />
       {rectRef.current && (isSelected || isCurrentAdding) ? (
         <>
+          {isSelected && (
+            <SettingsDeleteTooltip
+              position={{
+                x: rectRef.current.x() + currentWidth / 2 - 35,
+                y: rectRef.current.y() - 30,
+              }}
+              onDelete={onDelete}
+            />
+          )}
           <DimensionRect
             x={rectRef.current.x()}
             y={rectRef.current.y() + currentHeight / 2}
@@ -221,8 +232,8 @@ export default memo(function SolarPanelArea({
           />
           <TotalPanelsCount
             position={{
-              x: rectRef.current.x() + currentWidth + 20, // 20 is the space between the rect and total panels count
-              y: rectRef.current.y() + currentHeight / 2, // the division by 2 is for the center
+              x: rectRef.current.x() + currentWidth + 20,
+              y: rectRef.current.y() + currentHeight / 2,
             }}
             totalCountX={totalPanelCount.x}
             totalCountY={totalPanelCount.y}
