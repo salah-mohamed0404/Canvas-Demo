@@ -120,7 +120,7 @@ export default function CanvasBoard() {
 
   return (
     <div
-      className={`grid h-dvh w-dvw place-content-center overflow-hidden bg-neutral-300 ${
+      className={`grid h-dvh w-dvw place-content-center overflow-hidden bg-neutral-300 *:select-none ${
         isHovering ? "cursor-move" : ""
       } ${isAddingSolarPanelArea ? "cursor-crosshair" : ""}`}
       tabIndex={0}
