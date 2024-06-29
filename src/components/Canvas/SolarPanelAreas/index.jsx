@@ -6,6 +6,7 @@ export default function SolarPanelAreas({
   selectRect,
   selectedRect,
   onChange,
+  onDelete,
   scale,
 }) {
   return rectangles.map((rect, i) => (
@@ -16,6 +17,7 @@ export default function SolarPanelAreas({
       selectRect={() => selectRect(i)}
       isSelected={i === selectedRect}
       onChange={onChange(i)}
+      onDelete={onDelete(i)}
       scale={scale}
     />
   ));
