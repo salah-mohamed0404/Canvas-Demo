@@ -25,12 +25,12 @@ export default memo(function SolarPanelArea({
   isCurrentAdding,
 }) {
   const [solarPanels, setSolarPanels] = useState([]);
-  const rectRef = useRef();
-  const trRef = useRef();
-  const { image, imageRef } = useImage("Logo.svg");
   const [currentWidth, setCurrentWidth] = useState(rect.width);
   const [currentHeight, setCurrentHeight] = useState(rect.height);
   const [totalPanelCount, setTotalPanelCount] = useState({ x: 0, y: 0 });
+  const rectRef = useRef();
+  const trRef = useRef();
+  const { image, imageRef } = useImage("Logo.svg");
 
   if (rect.isNew && rectRef.current && solarPanels.length !== 0) {
     const node = rectRef.current;
