@@ -118,6 +118,12 @@ export default function CanvasBoard() {
     );
   };
 
+  const handleRectDelete = (indexToDelete) => () => {
+    setRectangles((currentRectangles) =>
+      currentRectangles.filter((_, index) => index !== indexToDelete),
+    );
+  };
+
   return (
     <div
       className={`grid h-dvh w-dvw place-content-center overflow-hidden bg-neutral-300 *:select-none ${
@@ -188,6 +194,7 @@ export default function CanvasBoard() {
             selectRect={selectRect}
             selectedRect={selectedRect}
             onChange={handleRectChange}
+            onDelete={handleRectDelete}
             scale={stageScale}
           />
 
