@@ -1,7 +1,8 @@
-import CanvasBoard from "./components/Canvas/CanvasBoard";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
 
 function App() {
-  return <CanvasBoard />;
+  return <RouterProvider router={router} />;
 }
 
 export default App;
