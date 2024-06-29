@@ -13,7 +13,7 @@ import {
 } from "../../../utils/SolarPanel";
 import DimensionRect from "./DimensionRect";
 import Axises from "../Axises";
-import TotalPanelsCount from "./TotalPanelsCount";
+import TotalPanelsCountTooltip from "./TotalPanelsCountTooltip";
 import SettingsDeleteTooltip from "./SettingsDeleteTooltip";
 
 export default memo(function SolarPanelArea({
@@ -230,7 +230,7 @@ export default memo(function SolarPanelArea({
             position={{ x: rectRef.current.x(), y: rectRef.current.y() }}
             roof={roof}
           />
-          <TotalPanelsCount
+          <TotalPanelsCountTooltip
             position={{
               x: rectRef.current.x() + currentWidth + 20,
               y: rectRef.current.y() + currentHeight / 2,
