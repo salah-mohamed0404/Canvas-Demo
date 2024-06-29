@@ -15,7 +15,7 @@ export default function Axises({
       <Html
         divProps={{
           className:
-            "absolute inset-y-0 w-1 border-l-2 border-dashed border-neutral-500",
+            "absolute inset-y-0 w-1 border-l-2 border-dashed border-neutral-500 pointer-events-none",
           style: { left: `${position.x}px` },
         }}
       />
@@ -23,7 +23,7 @@ export default function Axises({
       <Html
         divProps={{
           className:
-            "absolute inset-x-0 h-1 border-t-2 border-dashed border-neutral-500",
+            "absolute inset-x-0 h-1 border-t-2 border-dashed border-neutral-500 pointer-events-none",
           style: { top: `${position.y}px` },
         }}
       />
