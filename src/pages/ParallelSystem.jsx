@@ -1,29 +1,27 @@
+import { useState } from "react";
+import { Form } from "@/components/ui/form";
 import PositionStep from "@/components/ParallelSystem/PositionStep";
 import ConfigurationStep from "@/components/ParallelSystem/PositionStep/ConfigurationStep";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import useParallelForm from "@/hooks/useParallelForm";
 
 export default function ParallelSystem() {
   const [majorStep, setMajorStep] = useState(0);
-  const { register, getValues } = useForm();
+  const form = useParallelForm();
+  const { control, handleSubmit } = form;
 
-  const handleNextMajorStep = () => {
-    setMajorStep((prev) => prev + 1);
+  const onSubmit = (values) => {
+    // setMajorStep(prev => prev + 1);
   };
 
   return (
     <main>
-      <form>
-        {majorStep === 0 && (
-          <PositionStep
-            register={register}
-            getValues={getValues}
-            onNextMajorStep={handleNextMajorStep}
-          />
-        )}
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {majorStep === 0 && <PositionStep control={control} />}
 
-        {majorStep === 1 && <ConfigurationStep />}
-      </form>
+          {majorStep === 1 && <ConfigurationStep />}
+        </form>
+      </Form>
     </main>
   );
 }
